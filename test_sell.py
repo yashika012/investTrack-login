@@ -1,6 +1,6 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By  
+from selenium.webdriver.support.ui import WebDriverWait  
+from selenium.webdriver.support import expected_conditions as EC  
 from driver_setup import get_driver
 from config import BASE_URL, INVESTOR
 import time
@@ -9,8 +9,8 @@ def login(driver, wait):
     driver.get(f"{BASE_URL}/login")
     time.sleep(2)
     wait.until(EC.presence_of_element_located((By.ID, "email"))).send_keys(INVESTOR["email"])
-    driver.find_element(By.CSS_SELECTOR, "input[type='password']").send_keys(INVESTOR["password"])
-    driver.find_element(By.XPATH, "//button[contains(text(), 'Sign In')]").click()
+    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='password']"))).send_keys(INVESTOR["password"])
+    wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Sign In')]"))).click()
     wait.until(EC.url_contains("dashboard"))
     print("✅ Login ho gaya")
 
