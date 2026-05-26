@@ -1,0 +1,2686 @@
+{
+  "info": {
+    "_postman_id": "118cdcbb-113d-4389-9275-3bd40eb00269",
+    "name": "InvestTrack API Framework",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "35235351"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Get Current User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true hai\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Required keys hain ya nahi\r",
+                  "pm.test(\"User has required keys\", function () {\r",
+                  "    var user = pm.response.json().data;\r",
+                  "    pm.expect(user).to.have.property(\"id\");\r",
+                  "    pm.expect(user).to.have.property(\"email\");\r",
+                  "    pm.expect(user).to.have.property(\"name\");\r",
+                  "    pm.expect(user).to.have.property(\"role\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Schema validation - data types sahi hain\r",
+                  "pm.test(\"Schema is valid\", function () {\r",
+                  "    var user = pm.response.json().data;\r",
+                  "    pm.expect(user.id).to.be.a(\"number\");\r",
+                  "    pm.expect(user.email).to.be.a(\"string\");\r",
+                  "    pm.expect(user.name).to.be.a(\"string\");\r",
+                  "    pm.expect(user.role).to.be.a(\"string\");\r",
+                  "    pm.expect(user.isActive).to.be.a(\"boolean\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: User ID environment mein save karo\r",
+                  "var jsonData = pm.response.json();\r",
+                  "pm.environment.set(\"user_id\", jsonData.data.id);\r",
+                  "\r",
+                  "// Test 6: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Test 2: Token key check - correct key",
+                  "pm.test(\"Token key exists\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.tokens).to.have.property(\"accessToken\");",
+                  "});",
+                  "",
+                  "// Test 3: Tokens save karo environment mein",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data.tokens.accessToken) {",
+                  "    pm.environment.set(\"token\", jsonData.data.tokens.accessToken);",
+                  "    pm.environment.set(\"refresh_token\", jsonData.data.tokens.refreshToken);",
+                  "    console.log(\"Token saved successfully!\");",
+                  "}",
+                  "",
+                  "// Test 4: Response time",
+                  "pm.test(\"Response time is less than 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"investor@investtrack.com\",\r\n  \"password\": \"Invest@123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "auth register-(201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 201 or 200\", function () {\r",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+                  "});\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"testuser2@example.com\",\r\n    \"password\": \"Test@1234\",\r\n    \"name\": \"Test User\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "auth register-(400/409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: 400 ya 409 aana chahiye\r",
+                  "pm.test(\"Returns 400 or 409 for duplicate email\", function () {\r",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 409]);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success false hai\r",
+                  "pm.test(\"Success is false\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(false);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Error code E3005 hai\r",
+                  "pm.test(\"Error code is E3005\", function () {\r",
+                  "    pm.expect(pm.response.json().error.code).to.equal(\"E3005\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Error message sahi hai\r",
+                  "pm.test(\"Duplicate email error message exists\", function () {\r",
+                  "    pm.expect(pm.response.json().error).to.have.property(\"message\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"testuser2@example.com\",\r\n    \"password\": \"Test@1234\",\r\n    \"name\": \"Test User\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Message sahi hai\r",
+                  "pm.test(\"Logout message is correct\", function () {\r",
+                  "    pm.expect(pm.response.json().message).to.equal(\"Logged out successfully\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Data null hai\r",
+                  "pm.test(\"Data is null after logout\", function () {\r",
+                  "    pm.expect(pm.response.json().data).to.equal(null);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Token clear karo environment se\r",
+                  "pm.environment.unset(\"token\");\r",
+                  "pm.environment.unset(\"refresh_token\");\r",
+                  "console.log(\"Tokens cleared!\");\r",
+                  "\r",
+                  "// Test 6: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"refreshToken\": \"{{refresh_token}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "get users-(403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: 403 aana chahiye\r",
+                  "pm.test(\"Returns 403 for non-admin user\", function () {\r",
+                  "    pm.response.to.have.status(403);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success false\r",
+                  "pm.test(\"Success is false\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(false);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Error code E2001\r",
+                  "pm.test(\"Error code is E2001\", function () {\r",
+                  "    pm.expect(pm.response.json().error.code).to.equal(\"E2001\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Access denied message\r",
+                  "pm.test(\"Access denied message exists\", function () {\r",
+                  "    pm.expect(pm.response.json().error.message).to.include(\"Access denied\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"investor@investtrack.com\",\r\n  \"password\": \"Invest@123\"\r\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get users-(200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Data array hai\r",
+                  "pm.test(\"Data is array\", function () {\r",
+                  "    pm.expect(pm.response.json().data).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: User required keys hain\r",
+                  "pm.test(\"User has required keys\", function () {\r",
+                  "    var user = pm.response.json().data[0];\r",
+                  "    pm.expect(user).to.have.property(\"id\");\r",
+                  "    pm.expect(user).to.have.property(\"email\");\r",
+                  "    pm.expect(user).to.have.property(\"role\");\r",
+                  "    pm.expect(user).to.have.property(\"isActive\");\r",
+                  "    pm.expect(user).to.have.property(\"portfolioStats\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Summary exist karta hai\r",
+                  "pm.test(\"Summary has required keys\", function () {\r",
+                  "    var summary = pm.response.json().summary;\r",
+                  "    pm.expect(summary).to.have.property(\"totalUsers\");\r",
+                  "    pm.expect(summary).to.have.property(\"activeUsers\");\r",
+                  "    pm.expect(summary).to.have.property(\"verifiedUsers\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Total 9 users hain\r",
+                  "pm.test(\"Total users is 9\", function () {\r",
+                  "    pm.expect(pm.response.json().summary.totalUsers).to.equal(9);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 7: Breakdown exist karta hai\r",
+                  "pm.test(\"Breakdown has byRole\", function () {\r",
+                  "    pm.expect(pm.response.json().breakdown).to.have.property(\"byRole\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 8: Admin user exist karta hai\r",
+                  "pm.test(\"Admin user exists in list\", function () {\r",
+                  "    var users = pm.response.json().data;\r",
+                  "    var admin = users.find(u => u.role === \"admin\");\r",
+                  "    pm.expect(admin).to.not.be.undefined;\r",
+                  "});\r",
+                  "\r",
+                  "// Test 9: User ID save karo\r",
+                  "var jsonData = pm.response.json();\r",
+                  "pm.environment.set(\"user_id\", jsonData.data[0].id);\r",
+                  "console.log(\"User ID saved:\", jsonData.data[0].id);\r",
+                  "\r",
+                  "// Test 10: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"investor@investtrack.com\",\r\n  \"password\": \"Invest@123\"\r\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get user by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Required keys hain\r",
+                  "pm.test(\"User has required keys\", function () {\r",
+                  "    var user = pm.response.json().data;\r",
+                  "    pm.expect(user).to.have.property(\"id\");\r",
+                  "    pm.expect(user).to.have.property(\"email\");\r",
+                  "    pm.expect(user).to.have.property(\"name\");\r",
+                  "    pm.expect(user).to.have.property(\"role\");\r",
+                  "    pm.expect(user).to.have.property(\"isActive\");\r",
+                  "    pm.expect(user).to.have.property(\"emailVerified\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Schema valid hai\r",
+                  "pm.test(\"User schema is valid\", function () {\r",
+                  "    var user = pm.response.json().data;\r",
+                  "    pm.expect(user.id).to.be.a(\"number\");\r",
+                  "    pm.expect(user.email).to.be.a(\"string\");\r",
+                  "    pm.expect(user.name).to.be.a(\"string\");\r",
+                  "    pm.expect(user.role).to.be.a(\"string\");\r",
+                  "    pm.expect(user.isActive).to.be.a(\"boolean\");\r",
+                  "    pm.expect(user.emailVerified).to.be.a(\"boolean\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Correct user ID return hua\r",
+                  "pm.test(\"Correct user ID returned\", function () {\r",
+                  "    var userId = parseInt(pm.environment.get(\"user_id\"));\r",
+                  "    pm.expect(pm.response.json().data.id).to.equal(userId);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"investor@investtrack.com\",\r\n  \"password\": \"Invest@123\"\r\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200 or 201\r",
+                  "pm.test(\"Status is 200 or 201\", function () {\r",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Message sahi hai\r",
+                  "pm.test(\"User created message is correct\", function () {\r",
+                  "    pm.expect(pm.response.json().message).to.equal(\"User created successfully\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Required keys hain\r",
+                  "pm.test(\"Created user has required keys\", function () {\r",
+                  "    var user = pm.response.json().data;\r",
+                  "    pm.expect(user).to.have.property(\"id\");\r",
+                  "    pm.expect(user).to.have.property(\"email\");\r",
+                  "    pm.expect(user).to.have.property(\"name\");\r",
+                  "    pm.expect(user).to.have.property(\"role\");\r",
+                  "    pm.expect(user).to.have.property(\"isActive\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Email sahi save hua\r",
+                  "pm.test(\"Email matches request\", function () {\r",
+                  "    pm.expect(pm.response.json().data.email).to.equal(\"created@investtrack.com\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Role viewer hai\r",
+                  "pm.test(\"Role is viewer\", function () {\r",
+                  "    pm.expect(pm.response.json().data.role).to.equal(\"viewer\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 7: New user ID save karo\r",
+                  "var jsonData = pm.response.json();\r",
+                  "pm.environment.set(\"new_user_id\", jsonData.data.id);\r",
+                  "console.log(\"New user ID saved:\", jsonData.data.id);\r",
+                  "\r",
+                  "// Test 8: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"created3@investtrack.com\",\r\n    \"password\": \"Created3@123\",\r\n    \"name\": \"Created User\",\r\n    \"role\": \"viewer\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Message sahi hai\r",
+                  "pm.test(\"User updated message is correct\", function () {\r",
+                  "    pm.expect(pm.response.json().message).to.equal(\"User updated successfully\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Required keys hain\r",
+                  "pm.test(\"Updated user has required keys\", function () {\r",
+                  "    var user = pm.response.json().data;\r",
+                  "    pm.expect(user).to.have.property(\"id\");\r",
+                  "    pm.expect(user).to.have.property(\"email\");\r",
+                  "    pm.expect(user).to.have.property(\"name\");\r",
+                  "    pm.expect(user).to.have.property(\"updatedAt\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Name update hua\r",
+                  "pm.test(\"Name was updated correctly\", function () {\r",
+                  "    pm.expect(pm.response.json().data.name).to.equal(\"Updated Created User\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Updated Created User\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{new_user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{new_user_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Message sahi hai\r",
+                  "pm.test(\"User deleted message is correct\", function () {\r",
+                  "    pm.expect(pm.response.json().message).to.equal(\"User deleted successfully\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Data null hai\r",
+                  "pm.test(\"Data is null after delete\", function () {\r",
+                  "    pm.expect(pm.response.json().data).to.equal(null);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Environment se clear karo\r",
+                  "pm.environment.unset(\"new_user_id\");\r",
+                  "console.log(\"new_user_id cleared!\");\r",
+                  "\r",
+                  "// Test 6: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{new_user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{new_user_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "user login history",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status code 200",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Test 2: Success true hai",
+                  "pm.test(\"Response success is true\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});",
+                  "",
+                  "// Test 3: Data array hai",
+                  "pm.test(\"Data is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "// Test 4: Login history fields check",
+                  "pm.test(\"Login history entry has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data.length > 0) {",
+                  "        var entry = jsonData.data[0];",
+                  "        pm.expect(entry).to.have.property(\"id\");",
+                  "        pm.expect(entry).to.have.property(\"ip_address\");",
+                  "        pm.expect(entry).to.have.property(\"user_agent\");",
+                  "        pm.expect(entry).to.have.property(\"status\");",
+                  "        pm.expect(entry).to.have.property(\"login_at\");",
+                  "    }",
+                  "});",
+                  "",
+                  "// Test 5: Pagination object check",
+                  "pm.test(\"Pagination object exists\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.pagination).to.be.an(\"object\");",
+                  "    pm.expect(jsonData.pagination).to.have.property(\"page\");",
+                  "    pm.expect(jsonData.pagination).to.have.property(\"limit\");",
+                  "    pm.expect(jsonData.pagination).to.have.property(\"total\");",
+                  "    pm.expect(jsonData.pagination).to.have.property(\"totalPages\");",
+                  "    pm.expect(jsonData.pagination).to.have.property(\"hasNext\");",
+                  "    pm.expect(jsonData.pagination).to.have.property(\"hasPrev\");",
+                  "});",
+                  "",
+                  "// Test 6: Response time",
+                  "pm.test(\"Response time is less than 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}/login-history",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_id}}",
+                "login-history"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Portfolios",
+      "item": [
+        {
+          "name": "Get All Portfolios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true hai\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Data array hai\r",
+                  "pm.test(\"Data is an array\", function () {\r",
+                  "    pm.expect(pm.response.json().data).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Portfolio required keys hain\r",
+                  "pm.test(\"Portfolio has required keys\", function () {\r",
+                  "    var portfolio = pm.response.json().data[0];\r",
+                  "    pm.expect(portfolio).to.have.property(\"id\");\r",
+                  "    pm.expect(portfolio).to.have.property(\"name\");\r",
+                  "    pm.expect(portfolio).to.have.property(\"isDefault\");\r",
+                  "    pm.expect(portfolio).to.have.property(\"summary\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Summary keys hain ya nahi\r",
+                  "pm.test(\"Portfolio summary has required keys\", function () {\r",
+                  "    var summary = pm.response.json().data[0].summary;\r",
+                  "    pm.expect(summary).to.have.property(\"totalInvested\");\r",
+                  "    pm.expect(summary).to.have.property(\"currentValue\");\r",
+                  "    pm.expect(summary).to.have.property(\"totalGain\");\r",
+                  "    pm.expect(summary).to.have.property(\"holdingsCount\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Pagination keys hain\r",
+                  "pm.test(\"Pagination keys exist\", function () {\r",
+                  "    var pagination = pm.response.json().pagination;\r",
+                  "    pm.expect(pagination).to.have.property(\"page\");\r",
+                  "    pm.expect(pagination).to.have.property(\"total\");\r",
+                  "    pm.expect(pagination).to.have.property(\"hasNext\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 7: Portfolio ID save karo\r",
+                  "var jsonData = pm.response.json();\r",
+                  "if (jsonData.data && jsonData.data.length > 0) {\r",
+                  "    pm.environment.set(\"portfolio_id\", jsonData.data[0].id);\r",
+                  "    console.log(\"Portfolio ID saved:\", jsonData.data[0].id);\r",
+                  "}\r",
+                  "\r",
+                  "// Test 8: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/portfolios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "portfolios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Portfolio Summary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "})",
+                  "",
+                  "pm.test('Response success is true', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "})",
+                  "",
+                  "pm.test('Data object exists', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "})",
+                  "",
+                  "pm.test('Response time is less than 2000ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "})"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/portfolios/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "portfolios",
+                "summary"
+              ]
+            },
+            "description": "Generated from cURL: curl -X GET \"{{base_url}}/portfolios/summary\" -H \"Authorization: Bearer {{token}}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Portfolio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "})",
+                  "",
+                  "pm.test('Response success is true', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "})",
+                  "",
+                  "pm.test('Created portfolio has an id', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "})",
+                  "",
+                  "pm.test('Response time is less than 2000ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"My Portfolios \",\r\n\"description\": \"Test portfolio\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/portfolios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "portfolios"
+              ]
+            },
+            "description": "Generated from cURL: curl -X POST \"{{base_url}}/portfolios\" -H \"Authorization: Bearer {{token}}\" -H \"Content-Type: application/json\" -d \"{\\n  \\\"name\\\": \\\"My Portfolio\\\",\\n  \\\"description\\\": \\\"Test portfolio\\\"\\n}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Portfolio By Id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "})",
+                  "",
+                  "pm.test('Response success is true', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "})",
+                  "",
+                  "pm.test('Portfolio has required fields', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "    pm.expect(jsonData.data).to.have.property('name');",
+                  "})",
+                  "",
+                  "pm.test('Portfolio id matches environment portfolio_id', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var expectedId = pm.environment.get('portfolio_id');",
+                  "    if (expectedId) {",
+                  "        pm.expect(String(jsonData.data.id)).to.equal(String(expectedId));",
+                  "    }",
+                  "})",
+                  "",
+                  "pm.test('Response time is less than 2000ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "})"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/portfolios/{{portfolio_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "portfolios",
+                "{{portfolio_id}}"
+              ]
+            },
+            "description": "Generated from cURL: curl -X GET \"{{base_url}}/portfolios/{{portfolio_id}}\" -H \"Authorization: Bearer {{token}}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Update Portfolio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "})",
+                  "",
+                  "pm.test('Response success is true', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "})",
+                  "",
+                  "pm.test('Updated portfolio data is returned', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "    pm.expect(jsonData.data).to.have.property('name');",
+                  "})",
+                  "",
+                  "pm.test('Portfolio name is updated', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.name).to.equal('Updated Portfolio');",
+                  "})",
+                  "",
+                  "pm.test('Response time is less than 2000ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Updated Portfolio\",\r\n\"description\": \"Updated description\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/portfolios/{{portfolio_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "portfolios",
+                "{{portfolio_id}}"
+              ]
+            },
+            "description": "Generated from cURL: curl -X PUT \"{{base_url}}/portfolios/{{portfolio_id}}\" -H \"Authorization: Bearer {{token}}\" -H \"Content-Type: application/json\" -d \"{\\n  \\\"name\\\": \\\"Updated Portfolio\\\",\\n  \\\"description\\\": \\\"Updated description\\\"\\n}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Portfolio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 or 204', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([",
+                  "        200,",
+                  "        204",
+                  "    ]);",
+                  "})",
+                  "",
+                  "pm.test('Response is successful', function () {",
+                  "    if (pm.response.code === 200) {",
+                  "        var jsonData = pm.response.json();",
+                  "        pm.expect(jsonData.success).to.be.true;",
+                  "    } else {",
+                  "        pm.expect(pm.response.code).to.equal(204);",
+                  "    }",
+                  "})",
+                  "",
+                  "pm.test('Response time is less than 2000ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "})"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/portfolios/{{portfolio_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "portfolios",
+                "{{portfolio_id}}"
+              ]
+            },
+            "description": "Generated from cURL: curl -X DELETE \"{{base_url}}/portfolios/{{portfolio_id}}\" -H \"Authorization: Bearer {{token}}\""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Holdings",
+      "item": [
+        {
+          "name": "Get Portfolio Holdings by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Data array hai\r",
+                  "pm.test(\"Holdings data is array\", function () {\r",
+                  "    pm.expect(pm.response.json().data).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: 7 holdings hain\r",
+                  "pm.test(\"Total holdings count is 7\", function () {\r",
+                  "    pm.expect(pm.response.json().pagination.total).to.equal(7);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Required keys hain\r",
+                  "pm.test(\"Holding has required keys\", function () {\r",
+                  "    var holding = pm.response.json().data[0];\r",
+                  "    pm.expect(holding).to.have.property(\"id\");\r",
+                  "    pm.expect(holding).to.have.property(\"symbol\");\r",
+                  "    pm.expect(holding).to.have.property(\"quantity\");\r",
+                  "    pm.expect(holding).to.have.property(\"currentValue\");\r",
+                  "    pm.expect(holding).to.have.property(\"invested\");\r",
+                  "    pm.expect(holding).to.have.property(\"unrealizedGain\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Schema - data types sahi hain\r",
+                  "pm.test(\"Holdings schema is valid\", function () {\r",
+                  "    var holding = pm.response.json().data[0];\r",
+                  "    pm.expect(holding.id).to.be.a(\"number\");\r",
+                  "    pm.expect(holding.symbol).to.be.a(\"string\");\r",
+                  "    pm.expect(holding.quantity).to.be.a(\"number\");\r",
+                  "    pm.expect(holding.currentValue).to.be.a(\"number\");\r",
+                  "    pm.expect(holding.invested).to.be.a(\"number\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 7: Holding ID save karo\r",
+                  "var jsonData = pm.response.json();\r",
+                  "pm.environment.set(\"holding_id\", jsonData.data[0].id);\r",
+                  "console.log(\"Holding ID saved:\", jsonData.data[0].id);\r",
+                  "\r",
+                  "// Test 8: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/portfolios/{{portfolio_id}}/holdings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "portfolios",
+                "{{portfolio_id}}",
+                "holdings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get holdings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Data array hai\r",
+                  "pm.test(\"Data is an array\", function () {\r",
+                  "    pm.expect(pm.response.json().data).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Pagination exist karta hai\r",
+                  "pm.test(\"Pagination has required keys\", function () {\r",
+                  "    var pagination = pm.response.json().pagination;\r",
+                  "    pm.expect(pagination).to.have.property(\"page\");\r",
+                  "    pm.expect(pagination).to.have.property(\"limit\");\r",
+                  "    pm.expect(pagination).to.have.property(\"total\");\r",
+                  "    pm.expect(pagination).to.have.property(\"hasNext\");\r",
+                  "    pm.expect(pagination).to.have.property(\"hasPrev\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Summary exist karta hai\r",
+                  "pm.test(\"Summary has required keys\", function () {\r",
+                  "    var summary = pm.response.json().summary;\r",
+                  "    pm.expect(summary).to.have.property(\"totalHoldings\");\r",
+                  "    pm.expect(summary).to.have.property(\"uniqueStocks\");\r",
+                  "    pm.expect(summary).to.have.property(\"totalInvested\");\r",
+                  "    pm.expect(summary).to.have.property(\"currentValue\");\r",
+                  "    pm.expect(summary).to.have.property(\"portfolioCount\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/holdings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "holdings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create holdings by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200 or 201\r",
+                  "pm.test(\"Status is 200 or 201\", function () {\r",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Message sahi hai\r",
+                  "pm.test(\"Holding created message is correct\", function () {\r",
+                  "    pm.expect(pm.response.json().message).to.equal(\"New holding created successfully\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Required keys hain\r",
+                  "pm.test(\"Holding has required keys\", function () {\r",
+                  "    var data = pm.response.json().data;\r",
+                  "    pm.expect(data).to.have.property(\"id\");\r",
+                  "    pm.expect(data).to.have.property(\"symbol\");\r",
+                  "    pm.expect(data).to.have.property(\"quantity\");\r",
+                  "    pm.expect(data).to.have.property(\"avgPrice\");\r",
+                  "    pm.expect(data).to.have.property(\"currentValue\");\r",
+                  "    pm.expect(data).to.have.property(\"invested\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Symbol sahi hai\r",
+                  "pm.test(\"Symbol is WIPRO\", function () {\r",
+                  "    pm.expect(pm.response.json().data.symbol).to.equal(\"WIPRO\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: isNewHolding true hai\r",
+                  "pm.test(\"isNewHolding is true\", function () {\r",
+                  "    pm.expect(pm.response.json().data.isNewHolding).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 7: Transaction type BUY hai\r",
+                  "pm.test(\"Transaction type is BUY\", function () {\r",
+                  "    pm.expect(pm.response.json().data.transactionType).to.equal(\"BUY\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 8: New holding ID save karo\r",
+                  "var jsonData = pm.response.json();\r",
+                  "pm.environment.set(\"new_holding_id\", jsonData.data.id);\r",
+                  "console.log(\"New holding ID saved:\", jsonData.data.id);\r",
+                  "\r",
+                  "// Test 9: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"symbol\": \"WIPRO\",\r\n    \"quantity\": 2,\r\n    \"price\": 450,\r\n    \"transactionDate\": \"2026-05-24\",\r\n    \"notes\": \"Test buy via Postman\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/portfolios/{{portfolio_id}}/holdings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "portfolios",
+                "{{portfolio_id}}",
+                "holdings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create holdings by id and sell",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Message sahi hai\r",
+                  "pm.test(\"Sell message exists\", function () {\r",
+                  "    pm.expect(pm.response.json().message).to.include(\"remaining\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Required keys hain\r",
+                  "pm.test(\"Sell response has required keys\", function () {\r",
+                  "    var data = pm.response.json().data;\r",
+                  "    pm.expect(data).to.have.property(\"holdingId\");\r",
+                  "    pm.expect(data).to.have.property(\"symbol\");\r",
+                  "    pm.expect(data).to.have.property(\"soldQuantity\");\r",
+                  "    pm.expect(data).to.have.property(\"sellPrice\");\r",
+                  "    pm.expect(data).to.have.property(\"realizedGain\");\r",
+                  "    pm.expect(data).to.have.property(\"remainingQuantity\");\r",
+                  "    pm.expect(data).to.have.property(\"holdingClosed\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Symbol WIPRO hai\r",
+                  "pm.test(\"Symbol is WIPRO\", function () {\r",
+                  "    pm.expect(pm.response.json().data.symbol).to.equal(\"WIPRO\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Sold quantity 1 hai\r",
+                  "pm.test(\"Sold quantity is 1\", function () {\r",
+                  "    pm.expect(pm.response.json().data.soldQuantity).to.equal(1);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 7: Realized gain positive hai\r",
+                  "pm.test(\"Realized gain is positive\", function () {\r",
+                  "    pm.expect(pm.response.json().data.realizedGain).to.be.above(0);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 8: Holding closed false hai\r",
+                  "pm.test(\"Holding is not closed\", function () {\r",
+                  "    pm.expect(pm.response.json().data.holdingClosed).to.equal(false);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 9: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"quantity\": 1,\r\n    \"price\": 460,\r\n    \"transactionDate\": \"2026-05-24\",\r\n    \"notes\": \"Test sell via Postman\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/holdings/{{new_holding_id}}/sell",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "holdings",
+                "{{new_holding_id}}",
+                "sell"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get holdings by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Required keys hain\r",
+                  "pm.test(\"Holding has required keys\", function () {\r",
+                  "    var data = pm.response.json().data;\r",
+                  "    pm.expect(data).to.have.property(\"id\");\r",
+                  "    pm.expect(data).to.have.property(\"symbol\");\r",
+                  "    pm.expect(data).to.have.property(\"quantity\");\r",
+                  "    pm.expect(data).to.have.property(\"avgPrice\");\r",
+                  "    pm.expect(data).to.have.property(\"currentValue\");\r",
+                  "    pm.expect(data).to.have.property(\"unrealizedGain\");\r",
+                  "    pm.expect(data).to.have.property(\"realizedGain\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Transactions array hai\r",
+                  "pm.test(\"Transactions is an array\", function () {\r",
+                  "    pm.expect(pm.response.json().data.transactions).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Transaction required keys hain\r",
+                  "pm.test(\"Transaction has required keys\", function () {\r",
+                  "    var txn = pm.response.json().data.transactions[0];\r",
+                  "    pm.expect(txn).to.have.property(\"id\");\r",
+                  "    pm.expect(txn).to.have.property(\"type\");\r",
+                  "    pm.expect(txn).to.have.property(\"quantity\");\r",
+                  "    pm.expect(txn).to.have.property(\"price\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Symbol WIPRO hai\r",
+                  "pm.test(\"Symbol is WIPRO\", function () {\r",
+                  "    pm.expect(pm.response.json().data.symbol).to.equal(\"WIPRO\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 7: BUY aur SELL dono transactions hain\r",
+                  "pm.test(\"Has both BUY and SELL transactions\", function () {\r",
+                  "    var txns = pm.response.json().data.transactions;\r",
+                  "    var types = txns.map(t => t.type);\r",
+                  "    pm.expect(types).to.include(\"BUY\");\r",
+                  "    pm.expect(types).to.include(\"SELL\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 8: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"investor@investtrack.com\",\r\n  \"password\": \"Invest@123\"\r\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/holdings/{{new_holding_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "holdings",
+                "{{new_holding_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Get All Transactions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Data array hai\r",
+                  "pm.test(\"Transactions data is array\", function () {\r",
+                  "    pm.expect(pm.response.json().data).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Required keys hain\r",
+                  "pm.test(\"Transaction has required keys\", function () {\r",
+                  "    var txn = pm.response.json().data[0];\r",
+                  "    pm.expect(txn).to.have.property(\"id\");\r",
+                  "    pm.expect(txn).to.have.property(\"symbol\");\r",
+                  "    pm.expect(txn).to.have.property(\"type\");\r",
+                  "    pm.expect(txn).to.have.property(\"quantity\");\r",
+                  "    pm.expect(txn).to.have.property(\"price\");\r",
+                  "    pm.expect(txn).to.have.property(\"total\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Type BUY ya SELL hona chahiye\r",
+                  "pm.test(\"Transaction type is BUY or SELL\", function () {\r",
+                  "    var txn = pm.response.json().data[0];\r",
+                  "    pm.expect([\"BUY\", \"SELL\"]).to.include(txn.type);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Summary keys hain\r",
+                  "pm.test(\"Summary has required keys\", function () {\r",
+                  "    var summary = pm.response.json().summary;\r",
+                  "    pm.expect(summary).to.have.property(\"totalTransactions\");\r",
+                  "    pm.expect(summary).to.have.property(\"totalBought\");\r",
+                  "    pm.expect(summary).to.have.property(\"totalSold\");\r",
+                  "    pm.expect(summary).to.have.property(\"uniqueStocks\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 7: Total 7 transactions hain\r",
+                  "pm.test(\"Total transactions is 7\", function () {\r",
+                  "    pm.expect(pm.response.json().summary.totalTransactions).to.equal(7);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 8: Breakdown exists\r",
+                  "pm.test(\"Breakdown has byType and topStocks\", function () {\r",
+                  "    var breakdown = pm.response.json().breakdown;\r",
+                  "    pm.expect(breakdown).to.have.property(\"byType\");\r",
+                  "    pm.expect(breakdown).to.have.property(\"topStocks\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 9: Transaction ID save karo\r",
+                  "var jsonData = pm.response.json();\r",
+                  "pm.environment.set(\"transaction_id\", jsonData.data[0].id);\r",
+                  "\r",
+                  "// Test 10: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/transactions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "transactions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get portfolio transactions by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Data array hai\r",
+                  "pm.test(\"Data is an array\", function () {\r",
+                  "    pm.expect(pm.response.json().data).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Required keys hain\r",
+                  "pm.test(\"Transaction has required keys\", function () {\r",
+                  "    var txn = pm.response.json().data[0];\r",
+                  "    pm.expect(txn).to.have.property(\"id\");\r",
+                  "    pm.expect(txn).to.have.property(\"type\");\r",
+                  "    pm.expect(txn).to.have.property(\"symbol\");\r",
+                  "    pm.expect(txn).to.have.property(\"quantity\");\r",
+                  "    pm.expect(txn).to.have.property(\"price\");\r",
+                  "    pm.expect(txn).to.have.property(\"total\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Type BUY ya SELL hona chahiye — fixed\r",
+                  "pm.test(\"Transaction type is valid\", function () {\r",
+                  "    var txns = pm.response.json().data;\r",
+                  "    txns.forEach(function(txn) {\r",
+                  "        pm.expect([\"BUY\", \"SELL\"]).to.include(txn.type);\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Pagination exist karta hai\r",
+                  "pm.test(\"Pagination exists\", function () {\r",
+                  "    var p = pm.response.json().pagination;\r",
+                  "    pm.expect(p).to.have.property(\"page\");\r",
+                  "    pm.expect(p).to.have.property(\"total\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 7: Transaction ID save karo\r",
+                  "var jsonData = pm.response.json();\r",
+                  "pm.environment.set(\"transaction_id\", jsonData.data[0].id);\r",
+                  "\r",
+                  "// Test 8: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"investor@investtrack.com\",\r\n  \"password\": \"Invest@123\"\r\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/portfolios/{{portfolio_id}}/transactions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "portfolios",
+                "{{portfolio_id}}",
+                "transactions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get transactions by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Required keys hain\r",
+                  "pm.test(\"Transaction has required keys\", function () {\r",
+                  "    var data = pm.response.json().data;\r",
+                  "    pm.expect(data).to.have.property(\"id\");\r",
+                  "    pm.expect(data).to.have.property(\"type\");\r",
+                  "    pm.expect(data).to.have.property(\"symbol\");\r",
+                  "    pm.expect(data).to.have.property(\"quantity\");\r",
+                  "    pm.expect(data).to.have.property(\"price\");\r",
+                  "    pm.expect(data).to.have.property(\"total\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Holding object exist karta hai\r",
+                  "pm.test(\"Holding object exists\", function () {\r",
+                  "    var holding = pm.response.json().data.holding;\r",
+                  "    pm.expect(holding).to.have.property(\"id\");\r",
+                  "    pm.expect(holding).to.have.property(\"currentQuantity\");\r",
+                  "    pm.expect(holding).to.have.property(\"avgPrice\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Portfolio object exist karta hai\r",
+                  "pm.test(\"Portfolio object exists\", function () {\r",
+                  "    var portfolio = pm.response.json().data.portfolio;\r",
+                  "    pm.expect(portfolio).to.have.property(\"id\");\r",
+                  "    pm.expect(portfolio).to.have.property(\"name\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Type BUY ya SELL hona chahiye — fixed\r",
+                  "pm.test(\"Transaction type is valid\", function () {\r",
+                  "    pm.expect([\"BUY\", \"SELL\"]).to.include(pm.response.json().data.type);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 7: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"investor@investtrack.com\",\r\n  \"password\": \"Invest@123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/transactions/{{transaction_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "transactions",
+                "{{transaction_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update transactions by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Message sahi hai\r",
+                  "pm.test(\"Transaction updated message is correct\", function () {\r",
+                  "    pm.expect(pm.response.json().message).to.equal(\"Transaction updated successfully\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Notes update hua\r",
+                  "pm.test(\"Notes was updated correctly\", function () {\r",
+                  "    pm.expect(pm.response.json().data.notes).to.equal(\"Updated via Postman testing\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Required keys hain\r",
+                  "pm.test(\"Updated transaction has required keys\", function () {\r",
+                  "    var data = pm.response.json().data;\r",
+                  "    pm.expect(data).to.have.property(\"id\");\r",
+                  "    pm.expect(data).to.have.property(\"type\");\r",
+                  "    pm.expect(data).to.have.property(\"symbol\");\r",
+                  "    pm.expect(data).to.have.property(\"quantity\");\r",
+                  "    pm.expect(data).to.have.property(\"price\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"notes\": \"Updated via Postman testing\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/transactions/{{transaction_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "transactions",
+                "{{transaction_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete transactions by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Message sahi hai\r",
+                  "pm.test(\"Transaction deleted message is correct\", function () {\r",
+                  "    pm.expect(pm.response.json().message).to.equal(\"Transaction deleted successfully\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Required keys hain\r",
+                  "pm.test(\"Delete response has required keys\", function () {\r",
+                  "    var data = pm.response.json().data;\r",
+                  "    pm.expect(data).to.have.property(\"deletedTransactionId\");\r",
+                  "    pm.expect(data).to.have.property(\"type\");\r",
+                  "    pm.expect(data).to.have.property(\"holdingAdjusted\");\r",
+                  "    pm.expect(data).to.have.property(\"newHoldingQuantity\");\r",
+                  "    pm.expect(data).to.have.property(\"holdingDeleted\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Holding adjust hua\r",
+                  "pm.test(\"Holding was adjusted after delete\", function () {\r",
+                  "    pm.expect(pm.response.json().data.holdingAdjusted).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Holding delete nahi hua\r",
+                  "pm.test(\"Holding was not deleted\", function () {\r",
+                  "    pm.expect(pm.response.json().data.holdingDeleted).to.equal(false);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 7: Deleted transaction ID sahi hai\r",
+                  "pm.test(\"Deleted transaction ID is correct\", function () {\r",
+                  "    var deletedId = parseInt(pm.environment.get(\"transaction_id\"));\r",
+                  "    pm.expect(pm.response.json().data.deletedTransactionId).to.equal(deletedId);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 8: Environment clear karo\r",
+                  "pm.environment.unset(\"transaction_id\");\r",
+                  "\r",
+                  "// Test 9: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"investor@investtrack.com\",\r\n  \"password\": \"Invest@123\"\r\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/transactions/{{transaction_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "transactions",
+                "{{transaction_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Market",
+      "item": [
+        {
+          "name": "Get Market Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Required keys hain\r",
+                  "pm.test(\"Market status has required keys\", function () {\r",
+                  "    var data = pm.response.json().data;\r",
+                  "    pm.expect(data).to.have.property(\"isOpen\");\r",
+                  "    pm.expect(data).to.have.property(\"marketOpen\");\r",
+                  "    pm.expect(data).to.have.property(\"marketClose\");\r",
+                  "    pm.expect(data).to.have.property(\"day\");\r",
+                  "    pm.expect(data).to.have.property(\"message\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: isOpen boolean hai\r",
+                  "pm.test(\"isOpen is a boolean\", function () {\r",
+                  "    var data = pm.response.json().data;\r",
+                  "    pm.expect(data.isOpen).to.be.a(\"boolean\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/market/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "market",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Market Movers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Gainers, Losers, MostActive hain\r",
+                  "pm.test(\"Has gainers, losers and mostActive\", function () {\r",
+                  "    var data = pm.response.json().data;\r",
+                  "    pm.expect(data).to.have.property(\"gainers\");\r",
+                  "    pm.expect(data).to.have.property(\"losers\");\r",
+                  "    pm.expect(data).to.have.property(\"mostActive\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Gainers array hai aur 5 items hain\r",
+                  "pm.test(\"Gainers is array with 5 items\", function () {\r",
+                  "    var gainers = pm.response.json().data.gainers;\r",
+                  "    pm.expect(gainers).to.be.an(\"array\");\r",
+                  "    pm.expect(gainers.length).to.equal(5);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Losers array hai aur 5 items hain\r",
+                  "pm.test(\"Losers is array with 5 items\", function () {\r",
+                  "    var losers = pm.response.json().data.losers;\r",
+                  "    pm.expect(losers).to.be.an(\"array\");\r",
+                  "    pm.expect(losers.length).to.equal(5);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Gainer schema valid hai\r",
+                  "pm.test(\"Gainer has required keys\", function () {\r",
+                  "    var gainer = pm.response.json().data.gainers[0];\r",
+                  "    pm.expect(gainer).to.have.property(\"symbol\");\r",
+                  "    pm.expect(gainer).to.have.property(\"price\");\r",
+                  "    pm.expect(gainer).to.have.property(\"change\");\r",
+                  "    pm.expect(gainer).to.have.property(\"changePercent\");\r",
+                  "    pm.expect(gainer).to.have.property(\"volume\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 7: Gainers mein changePercent positive hona chahiye\r",
+                  "pm.test(\"Gainers have positive changePercent\", function () {\r",
+                  "    var gainers = pm.response.json().data.gainers;\r",
+                  "    gainers.forEach(function(g) {\r",
+                  "        pm.expect(g.changePercent).to.be.above(0);\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "// Test 8: Losers mein changePercent negative hona chahiye\r",
+                  "pm.test(\"Losers have negative changePercent\", function () {\r",
+                  "    var losers = pm.response.json().data.losers;\r",
+                  "    losers.forEach(function(l) {\r",
+                  "        pm.expect(l.changePercent).to.be.below(0);\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "// Test 9: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/market/movers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "market",
+                "movers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create market/refresh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: Status 200\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success true\r",
+                  "pm.test(\"Success is true\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Message sahi hai\r",
+                  "pm.test(\"Prices refreshed message exists\", function () {\r",
+                  "    pm.expect(pm.response.json().message).to.include(\"Prices refreshed\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Updated count hai\r",
+                  "pm.test(\"Updated count exists and is a number\", function () {\r",
+                  "    pm.expect(pm.response.json().data.updated).to.be.a(\"number\");\r",
+                  "    pm.expect(pm.response.json().data.updated).to.be.above(0);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Market status exist karta hai\r",
+                  "pm.test(\"Market status exists\", function () {\r",
+                  "    var status = pm.response.json().data.marketStatus;\r",
+                  "    pm.expect(status).to.have.property(\"isOpen\");\r",
+                  "    pm.expect(status).to.have.property(\"marketOpen\");\r",
+                  "    pm.expect(status).to.have.property(\"marketClose\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 6: Response time\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/market/refresh",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "market",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Negative Test",
+      "item": [
+        {
+          "name": "Unauthorized Access Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test 1: 401 aana chahiye\r",
+                  "pm.test(\"Returns 401 without token\", function () {\r",
+                  "    pm.response.to.have.status(401);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 2: Success false hai\r",
+                  "pm.test(\"Success is false\", function () {\r",
+                  "    pm.expect(pm.response.json().success).to.equal(false);\r",
+                  "});\r",
+                  "\r",
+                  "// Test 3: Error object exist karta hai\r",
+                  "pm.test(\"Error object exists\", function () {\r",
+                  "    pm.expect(pm.response.json()).to.have.property(\"error\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 4: Error code E1004 hai\r",
+                  "pm.test(\"Error code is E1004\", function () {\r",
+                  "    pm.expect(pm.response.json().error.code).to.equal(\"E1004\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test 5: Error message sahi hai\r",
+                  "pm.test(\"Error message is correct\", function () {\r",
+                  "    pm.expect(pm.response.json().error).to.have.property(\"message\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/portfolios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "portfolios"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          "// Agar token nahi hai toh auto login karo\r",
+          "if (!pm.environment.get(\"token\")) {\r",
+          "    pm.sendRequest({\r",
+          "        url: pm.environment.get(\"base_url\") + \"/auth/login\",\r",
+          "        method: \"POST\",\r",
+          "        header: { \"Content-Type\": \"application/json\" },\r",
+          "        body: {\r",
+          "            mode: \"raw\",\r",
+          "            raw: JSON.stringify({\r",
+          "                email: \"investor@investtrack.com\",\r",
+          "                password: \"Invest@123\"\r",
+          "            })\r",
+          "        }\r",
+          "    }, function (err, res) {\r",
+          "        var token = res.json().data.tokens.accessToken;\r",
+          "        var refresh = res.json().data.tokens.refreshToken;\r",
+          "        pm.environment.set(\"token\", token);\r",
+          "        pm.environment.set(\"refresh_token\", refresh);\r",
+          "        console.log(\"Auto login done!\");\r",
+          "    });\r",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
