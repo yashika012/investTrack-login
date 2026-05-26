@@ -1,6 +1,6 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By  
+from selenium.webdriver.support.ui import WebDriverWait 
+from selenium.webdriver.support import expected_conditions as EC  
 from driver_setup import get_driver
 from config import BASE_URL, INVESTOR
 import time
@@ -49,16 +49,15 @@ def test_login():
         driver.save_screenshot("login_success.png")
         print("📸 Screenshot: login_success.png")
         
-        return driver
+        return driver  # Ab ye active driver successfully return hoga
         
     except Exception as e:
         print(f"❌ Error: {e}")
         driver.save_screenshot("login_error.png")
+        driver.quit()  # Sirf fail hone par hi browser close hoga
         raise
-        
-    finally:
-        time.sleep(3)
-        driver.quit()
 
 if __name__ == "__main__":
-    test_login()
+    active_driver = test_login()
+    time.sleep(3)
+    active_driver.quit()
